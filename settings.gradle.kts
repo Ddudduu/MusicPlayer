@@ -15,4 +15,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "AndroidStudy"
 include(":app")
- 
+include(":data")
+include(":domain")
+include(":core")
+include(":presentation")
