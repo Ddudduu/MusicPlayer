@@ -1,9 +1,9 @@
 package com.example.domain.entity
 
-import com.sun.jndi.toolkit.url.Uri
 
 class Music(
+    val id: Long,
     val title: String,
-    val artist: String,
-    val albumUri: Uri? = null
+    val artist: String?
+//    val albumUri: Uri
 )
