@@ -4,18 +4,18 @@ plugins {
     kotlin("kapt")
 }
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 kotlin {
     compilerOptions {
-        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
     }
 }
 
 dependencies {
     implementation(kotlin("stdlib"))
     implementation("javax.inject:javax.inject:1")
-    implementation("com.google.dagger:hilt-core:2.56.1")
-    kapt("com.google.dagger:hilt-compiler:2.56.1")
+    implementation("com.google.dagger:hilt-core:2.48")
+    kapt("com.google.dagger:hilt-compiler:2.48")
 }
