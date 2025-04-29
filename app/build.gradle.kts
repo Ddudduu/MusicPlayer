@@ -56,7 +56,6 @@ dependencies {
     implementation(project(":core"))
     implementation(project(":data"))
     implementation(project(":domain"))
-    implementation(project(":presentation"))
 
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
@@ -73,10 +72,12 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+    implementation("androidx.compose.runtime:runtime-livedata:1.7.8")
 
     // hilt
     implementation("com.google.dagger:hilt-android:2.48")
     kapt("com.google.dagger:hilt-compiler:2.48")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
     implementation("androidx.activity:activity-ktx:1.10.1")
     implementation ("com.google.accompanist:accompanist-permissions:0.32.0")
