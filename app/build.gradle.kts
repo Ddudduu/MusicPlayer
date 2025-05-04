@@ -73,6 +73,7 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation("androidx.compose.runtime:runtime-livedata:1.7.8")
+    implementation("androidx.navigation:navigation-compose:2.8.9")
 
     // hilt
     implementation("com.google.dagger:hilt-android:2.48")
