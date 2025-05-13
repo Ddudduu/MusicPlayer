@@ -1,7 +1,6 @@
-package com.example.data.repository
+package com.example.data.di
 
 import android.content.Context
-import android.util.Printer
 import com.example.data.repository.MusicRepositoryImpl
 import com.example.domain.repository.MusicRepository
 import dagger.Module
