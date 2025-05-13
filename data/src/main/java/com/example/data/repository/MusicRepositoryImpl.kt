@@ -8,12 +8,16 @@ import androidx.annotation.RequiresApi
 import com.example.domain.entity.Music
 import com.example.domain.repository.MusicRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 class MusicRepositoryImpl @Inject constructor(@ApplicationContext private val context: Context) :
     MusicRepository {
     @RequiresApi(Build.VERSION_CODES.Q)
-    override suspend fun getMusicList(): List<Music> {
+    override fun getMusicList(): Flow<List<Music>> = flow {
         val musicList = mutableListOf<Music>()
 
         val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
@@ -62,6 +66,7 @@ class MusicRepositoryImpl @Inject constructor(@ApplicationContext private val co
             }
         }
 
-        return musicList
-    }
+        emit(musicList)
+        //  IO 스레드 실행하도록 명시
+    }.flowOn(Dispatchers.IO)
 }

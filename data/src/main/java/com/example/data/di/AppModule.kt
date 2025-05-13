@@ -16,5 +16,4 @@ object AppModule {
     fun provideMusicRepository(@ApplicationContext context: Context): MusicRepository {
         return MusicRepositoryImpl(context)
     }
-
 }
