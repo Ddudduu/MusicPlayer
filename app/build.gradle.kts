@@ -53,7 +53,6 @@ android {
 
 dependencies {
     // module dependency
-    implementation(project(":core"))
     implementation(project(":data"))
     implementation(project(":domain"))
 
@@ -81,5 +80,5 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
     implementation("androidx.activity:activity-ktx:1.10.1")
-    implementation ("com.google.accompanist:accompanist-permissions:0.32.0")
+    implementation("com.google.accompanist:accompanist-permissions:0.32.0")
 }
