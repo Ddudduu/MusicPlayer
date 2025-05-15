@@ -1,7 +1,5 @@
 package com.example.androidstudy.viewModel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.entity.Music
@@ -19,7 +17,7 @@ class MusicViewModel @Inject constructor(private val repository: MusicRepository
     val musicList: StateFlow<List<Music>> = _musicList
 
     fun getMusicList() {
-        // 명시하지 않아도 기본적으로 main 스레드에서 실행
+        // 기본적으로 main 스레드에서 실행
         viewModelScope.launch(Dispatchers.Main) {
             repository.getMusicList().collect { result ->
                 _musicList.value = result
