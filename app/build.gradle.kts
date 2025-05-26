@@ -72,6 +72,7 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation("androidx.compose.runtime:runtime-livedata:1.7.8")
+    implementation("androidx.compose.runtime:runtime:1.4.0")
     implementation("androidx.navigation:navigation-compose:2.8.9")
 
     // hilt
@@ -81,4 +82,6 @@ dependencies {
 
     implementation("androidx.activity:activity-ktx:1.10.1")
     implementation("com.google.accompanist:accompanist-permissions:0.32.0")
+    implementation(platform("androidx.compose:compose-bom:2025.01.01"))
+
 }
