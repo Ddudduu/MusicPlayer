@@ -2,6 +2,9 @@ package com.example.androidstudy
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
+import android.media.MediaMetadataRetriever
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -10,6 +13,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,6 +22,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -31,7 +37,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -45,6 +53,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.androidstudy.enum.Screen
 import com.example.androidstudy.ui.theme.AndroidStudyTheme
 import com.example.androidstudy.viewModel.MusicViewModel
@@ -56,6 +66,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -69,6 +80,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.P)
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
@@ -150,6 +162,7 @@ fun AppTitle(name: String, modifier: Modifier = Modifier) {
 
 }
 
+@RequiresApi(Build.VERSION_CODES.P)
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(navController: NavController) {
@@ -191,6 +204,7 @@ fun MainScreen(navController: NavController) {
     Log.i("=== current permission state ===", permissionState.status.toString())
 }
 
+@RequiresApi(Build.VERSION_CODES.P)
 @Composable
 fun MusicList(
     navController: NavController,
@@ -208,11 +222,17 @@ fun MusicList(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.P)
 @Composable
 fun MusicItem(
     music: Music,
     onClick: (Music) -> Unit
 ) {
+    val context = LocalContext.current
+    val mediaMetaDataRetriever = MediaMetadataRetriever()
+    mediaMetaDataRetriever.setDataSource(context, Uri.parse(music.musicUri))
+    val picture = mediaMetaDataRetriever.embeddedPicture
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -220,22 +240,52 @@ fun MusicItem(
             .clickable { onClick(music) },
         colors = CardDefaults.cardColors(containerColor = Color.LightGray)
     ) {
-        Column(
-            modifier = Modifier.padding(8.dp),
-            verticalArrangement = Arrangement.Center
+        Row(
+            modifier = Modifier
+                .padding(4.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                "${music.title}",
-                color = Color.Black,
-                fontWeight = FontWeight.W600
+            AsyncImage(
+                modifier = Modifier.size(50.dp),
+                contentScale = ContentScale.Fit,
+                model = picture?.let {
+                    // ByteArray -> Bitmap
+                    ImageRequest.Builder(context)
+                        .data(BitmapFactory.decodeByteArray(it, 0, it.size)).crossfade(true)
+                        .placeholder(R.drawable.img_music_default)
+                        .error(R.drawable.img_music_default)
+                        .listener(
+                            onError = { _, result ->
+                                Log.e("=== Coil loading error :", "${result.throwable}")
+                            },
+                            onSuccess = { _, result ->
+                                Log.i("=== Coil loading success :", "===")
+                            }
+                        ).build()
+                } ?: R.drawable.img_music_default,
+                contentDescription = null,
+                error = painterResource(R.drawable.img_music_default)
             )
-            Text(
-                "${music.artist}",
-                color = Color.DarkGray,
-                fontWeight = FontWeight.W300
-            )
+
+            Column(
+                modifier = Modifier.padding(8.dp),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    "${music.title}",
+                    color = Color.Black,
+                    fontWeight = FontWeight.W600
+                )
+                Text(
+                    "${music.artist}",
+                    color = Color.DarkGray,
+                    fontWeight = FontWeight.W300
+                )
+            }
         }
     }
+    mediaMetaDataRetriever.release()
 }
 
 @Composable

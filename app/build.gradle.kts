@@ -81,4 +81,6 @@ dependencies {
 
     implementation("androidx.activity:activity-ktx:1.10.1")
     implementation("com.google.accompanist:accompanist-permissions:0.32.0")
+
+    implementation("io.coil-kt:coil-compose:2.5.0")
 }
