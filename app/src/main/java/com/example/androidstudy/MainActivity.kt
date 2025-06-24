@@ -14,7 +14,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -99,7 +98,7 @@ fun Navigation() {
 @Composable
 fun RequestPermissionOnLaunch(
     // 권한 허용 시 호출할 콜백
-    onPermissionGranted: () -> Unit
+    onPermissionGranted: () -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -208,7 +207,7 @@ fun MainScreen(navController: NavController) {
 @Composable
 fun MusicList(
     navController: NavController,
-    viewModel: MusicViewModel = hiltViewModel()
+    viewModel: MusicViewModel = hiltViewModel(),
 ) {
     LaunchedEffect(Unit) { viewModel.getMusicList() }
     val musicList = viewModel.musicList.collectAsState()
@@ -217,6 +216,7 @@ fun MusicList(
             val music = musicList.value[index]
             MusicItem(music) {
                 navController.navigate(Screen.Player.route + "?title=${music.title}")
+                viewModel.playMusic(Uri.parse(it.musicUri))
             }
         }
     }
@@ -226,7 +226,7 @@ fun MusicList(
 @Composable
 fun MusicItem(
     music: Music,
-    onClick: (Music) -> Unit
+    onClick: (Music) -> Unit,
 ) {
     val context = LocalContext.current
     val mediaMetaDataRetriever = MediaMetadataRetriever()
