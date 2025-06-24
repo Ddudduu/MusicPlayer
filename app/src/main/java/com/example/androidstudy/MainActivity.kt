@@ -216,7 +216,7 @@ fun MusicList(
             val music = musicList.value[index]
             MusicItem(music) {
                 navController.navigate(Screen.Player.route + "?title=${music.title}")
-                viewModel.playMusic(Uri.parse(it.musicUri))
+                viewModel.playMusic(it.musicUri.toString())
             }
         }
     }
