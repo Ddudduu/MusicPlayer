@@ -35,16 +35,17 @@ class MusicViewModel @Inject constructor(
         playerRepository.play(uri)
     }
 
-    fun pauseMusic(){
+    fun pauseMusic() {
         playerRepository.pause()
     }
 
-    fun resumeMusic(){
+    fun resumeMusic() {
         playerRepository.resume()
     }
 
     override fun onCleared() {
         super.onCleared()
+        println("!!! onCleared called !!!")
         playerRepository.release()
     }
 }

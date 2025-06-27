@@ -21,6 +21,7 @@ class PlayerRepositoryImpl @Inject constructor(
     private fun createListener() = object : Player.Listener {
         override fun onIsPlayingChanged(isPlaying: Boolean) {
             _isPlaying.value = isPlaying
+            println("$$ isPlaying $$ $isPlaying")
         }
     }
 
@@ -29,6 +30,10 @@ class PlayerRepositoryImpl @Inject constructor(
     }
 
     override fun play(path: String) {
+        if (isPlaying.value) {
+            exoPlayer.stop()
+        }
+
         exoPlayer.setMediaItem(MediaItem.fromUri(Uri.parse(path)))
         exoPlayer.prepare()
         exoPlayer.play()

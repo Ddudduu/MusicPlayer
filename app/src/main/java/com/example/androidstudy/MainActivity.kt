@@ -92,15 +92,33 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = Screen.Main.route) {
-        composable(route = Screen.Main.route) { MainScreen(navController) }
+    NavHost(
+        navController = navController,
+        startDestination = Screen.List.route,
+        route = Screen.Main.route
+    ) {
+        composable(route = Screen.List.route) { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(Screen.Main.route)
+            }
+            val viewModel = hiltViewModel<MusicViewModel>(parentEntry)
+            MainScreen(navController, viewModel)
+        }
+
         composable(
             route = Screen.Player.route + "?title={title}",
             arguments = listOf(navArgument("title") {
                 type = NavType.StringType
                 nullable = true
             })
-        ) { PlayerScreen(title = it.arguments?.getString("title").toString()) }
+        ) { backStackEntry ->
+            val parentEntry =
+                remember(backStackEntry) { navController.getBackStackEntry(Screen.Main.route) }
+            val viewModel = hiltViewModel<MusicViewModel>(parentEntry)
+
+            val title = backStackEntry.arguments?.getString("title").toString()
+            PlayerScreen(title = title, viewModel)
+        }
     }
 }
 
@@ -173,7 +191,10 @@ fun AppTitle(name: String, modifier: Modifier = Modifier) {
 @RequiresApi(Build.VERSION_CODES.P)
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(navController: NavController) {
+fun MainScreen(
+    navController: NavController,
+    viewModel: MusicViewModel = hiltViewModel(),
+) {
     // 현재 권한 상태
     val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         Manifest.permission.READ_MEDIA_AUDIO
@@ -204,11 +225,12 @@ fun MainScreen(navController: NavController) {
                     .padding(it)
             ) {
                 if (permissionState.status.isGranted) {
-                    MusicList(navController = navController)
+                    MusicList(navController = navController, viewModel)
                 }
             }
         }
     )
+
     Log.i("=== current permission state ===", permissionState.status.toString())
 }
 
