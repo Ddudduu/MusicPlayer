@@ -14,6 +14,10 @@ class PlayerRepositoryImpl @Inject constructor(private val exoPlayer: ExoPlayer)
         exoPlayer.play()
     }
 
+    override fun pause() {
+        exoPlayer.pause()
+    }
+
     override fun release() {
         exoPlayer.release()
     }
