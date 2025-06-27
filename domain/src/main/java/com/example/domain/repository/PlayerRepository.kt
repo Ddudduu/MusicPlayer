@@ -6,5 +6,7 @@ interface PlayerRepository {
     val isPlaying: StateFlow<Boolean>
 
     fun play(path: String)
+    fun pause()
+    fun resume()
     fun release()
 }

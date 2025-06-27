@@ -34,6 +34,15 @@ class PlayerRepositoryImpl @Inject constructor(
         exoPlayer.play()
     }
 
+    override fun pause() {
+        exoPlayer.pause()
+    }
+
+    // 일시정지 시점부터 다시 재생
+    override fun resume() {
+        exoPlayer.play()
+    }
+
     override fun release() {
         exoPlayer.release()
         exoPlayer.removeListener(exoPlayerListener)
