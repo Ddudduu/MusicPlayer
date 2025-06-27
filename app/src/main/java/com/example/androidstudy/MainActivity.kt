@@ -14,6 +14,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -39,7 +40,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -298,9 +298,9 @@ fun MusicItem(
 }
 
 @Composable
-fun PlayerScreen(title: String) {
+fun PlayerScreen(title: String, viewModel: MusicViewModel = hiltViewModel()) {
     var sliderPosition by remember { mutableFloatStateOf(0f) }
-    var isPlaying by remember { mutableStateOf(true) }
+    val isPlaying by viewModel.isPlaying.collectAsState()
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -348,7 +348,9 @@ fun PlayerScreen(title: String) {
                 onClick = {},
                 content = {
                     Image(
-                        painter = painterResource(id = R.drawable.ic_play),
+                        painter = if (isPlaying)
+                            painterResource(id = R.drawable.ic_pause)
+                        else painterResource(R.drawable.ic_play),
                         contentDescription = null
                     )
                 })

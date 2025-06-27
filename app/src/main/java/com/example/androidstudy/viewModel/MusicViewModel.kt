@@ -20,6 +20,8 @@ class MusicViewModel @Inject constructor(
     private val _musicList = MutableStateFlow<List<Music>>(emptyList())
     val musicList: StateFlow<List<Music>> = _musicList
 
+    val isPlaying = playerRepository.isPlaying
+
     fun getMusicList() {
         // 기본적으로 main 스레드에서 실행
         viewModelScope.launch(Dispatchers.Main) {
