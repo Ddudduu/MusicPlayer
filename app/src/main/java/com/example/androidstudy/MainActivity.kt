@@ -345,7 +345,10 @@ fun PlayerScreen(title: String, viewModel: MusicViewModel = hiltViewModel()) {
 
             IconButton(
                 modifier = Modifier.weight(1f),
-                onClick = {},
+                onClick = {
+                    if (isPlaying) viewModel.pauseMusic()
+                    else viewModel.resumeMusic()
+                },
                 content = {
                     Image(
                         painter = if (isPlaying)
