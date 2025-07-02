@@ -1,9 +1,11 @@
 package com.example.data.repository
 
 import android.net.Uri
+import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
+import com.example.domain.entity.Music
 import com.example.domain.repository.PlayerRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,13 +31,25 @@ class PlayerRepositoryImpl @Inject constructor(
         exoPlayer.addListener(exoPlayerListener)
     }
 
-    override fun play(path: String) {
-        if (isPlaying.value) {
-            exoPlayer.stop()
+    override fun setMusicList(musicList: List<Music>) {
+        val mediaItems = musicList.map {
+            MediaItem.fromUri(Uri.parse(it.musicUri))
         }
-
-        exoPlayer.setMediaItem(MediaItem.fromUri(Uri.parse(path)))
+        exoPlayer.setMediaItems(mediaItems)
         exoPlayer.prepare()
+
+        Log.i("== exoPlayer media ==", exoPlayer.mediaItemCount.toString())
+    }
+
+    override fun play(idx: Int) {
+//        if (isPlaying.value) {
+//            exoPlayer.stop()
+//        }
+
+//        exoPlayer.setMediaItem(MediaItem.fromUri(Uri.parse(path)))
+//        exoPlayer.prepare()
+        Log.i(" == play called! ==", idx.toString())
+        exoPlayer.seekTo(idx, 0)
         exoPlayer.play()
     }
 

@@ -1,11 +1,14 @@
 package com.example.domain.repository
 
+import com.example.domain.entity.Music
 import kotlinx.coroutines.flow.StateFlow
 
 interface PlayerRepository {
     val isPlaying: StateFlow<Boolean>
 
-    fun play(path: String)
+    fun setMusicList(musicList: List<Music>)
+    fun play(idx: Int)
+
     fun pause()
     fun resume()
     fun release()

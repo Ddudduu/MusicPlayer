@@ -27,12 +27,21 @@ class MusicViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.Main) {
             musicRepository.getMusicList().collect { result ->
                 _musicList.value = result
+                setMusicList(result)
             }
         }
     }
 
-    fun playMusic(uri: String) {
-        playerRepository.play(uri)
+    fun setMusicList(musicList: List<Music>) {
+        playerRepository.setMusicList(musicList)
+    }
+
+    fun playMusic(idx: Int) {
+        playerRepository.play(idx)
+    }
+
+    fun getNextMusic() {
+
     }
 
     fun pauseMusic() {

@@ -242,12 +242,13 @@ fun MusicList(
 ) {
     LaunchedEffect(Unit) { viewModel.getMusicList() }
     val musicList = viewModel.musicList.collectAsState()
+
     LazyColumn {
         items(musicList.value.size) { index ->
             val music = musicList.value[index]
             MusicItem(music) {
                 navController.navigate(Screen.Player.route + "?title=${music.title}")
-                viewModel.playMusic(it.musicUri.toString())
+                viewModel.playMusic(index)
             }
         }
     }
@@ -383,7 +384,7 @@ fun PlayerScreen(title: String, viewModel: MusicViewModel = hiltViewModel()) {
             IconButton(
                 modifier = Modifier
                     .weight(1f),
-                onClick = {},
+                onClick = { },
                 content = {
                     Image(
                         painter = painterResource(id = R.drawable.ic_next),
