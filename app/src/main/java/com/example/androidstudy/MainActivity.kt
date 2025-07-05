@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -244,10 +245,14 @@ fun MusicList(
     val musicList = viewModel.musicList.collectAsState()
 
     LazyColumn {
-        items(musicList.value.size) { index ->
+        itemsIndexed(
+            items = musicList.value,
+            key = { _, item -> item.id}
+        ) { index, music ->
             val music = musicList.value[index]
             MusicItem(music) {
                 navController.navigate(Screen.Player.route + "?title=${music.title}")
+                Log.i("=== music idx ===", index.toString())
                 viewModel.playMusic(index)
             }
         }

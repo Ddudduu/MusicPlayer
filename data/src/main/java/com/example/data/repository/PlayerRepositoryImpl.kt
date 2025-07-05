@@ -18,6 +18,9 @@ class PlayerRepositoryImpl @Inject constructor(
     private val _isPlaying = MutableStateFlow(false)
     override val isPlaying: StateFlow<Boolean> get() = _isPlaying
 
+    private val _isMediaItemSet = MutableStateFlow(false)
+    override val isMediaItemSet: StateFlow<Boolean> get() = _isMediaItemSet
+
     // ExoPlayer 재생 상태 값을 받아오기 위한 리스너
     private val exoPlayerListener: Player.Listener = createListener()
     private fun createListener() = object : Player.Listener {
@@ -32,23 +35,20 @@ class PlayerRepositoryImpl @Inject constructor(
     }
 
     override fun setMusicList(musicList: List<Music>) {
+        if (isMediaItemSet.value) return
+
         val mediaItems = musicList.map {
             MediaItem.fromUri(Uri.parse(it.musicUri))
         }
         exoPlayer.setMediaItems(mediaItems)
         exoPlayer.prepare()
 
-        Log.i("== exoPlayer media ==", exoPlayer.mediaItemCount.toString())
+        _isMediaItemSet.value = true
     }
 
     override fun play(idx: Int) {
-//        if (isPlaying.value) {
-//            exoPlayer.stop()
-//        }
-
-//        exoPlayer.setMediaItem(MediaItem.fromUri(Uri.parse(path)))
-//        exoPlayer.prepare()
         Log.i(" == play called! ==", idx.toString())
+
         exoPlayer.seekTo(idx, 0)
         exoPlayer.play()
     }
