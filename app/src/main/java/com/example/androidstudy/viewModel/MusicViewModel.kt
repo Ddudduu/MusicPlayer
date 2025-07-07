@@ -21,14 +21,11 @@ class MusicViewModel @Inject constructor(
     private val _musicList = MutableStateFlow<List<Music>>(emptyList())
     val musicList: StateFlow<List<Music>> = _musicList
 
-<<<<<<< Updated upstream
-=======
     val isPlaying = playerRepository.isPlaying
 
     private val _curPos = MutableStateFlow(0L)
     val curPos: StateFlow<Long> = _curPos
 
->>>>>>> Stashed changes
     fun getMusicList() {
         // 기본적으로 main 스레드에서 실행
         viewModelScope.launch(Dispatchers.Main) {
@@ -38,8 +35,6 @@ class MusicViewModel @Inject constructor(
             }
         }
     }
-<<<<<<< Updated upstream
-=======
 
     fun setMusicList(musicList: List<Music>) {
         playerRepository.setMusicList(musicList)
@@ -76,5 +71,4 @@ class MusicViewModel @Inject constructor(
         println("!!! onCleared called !!!")
         playerRepository.release()
     }
->>>>>>> Stashed changes
 }

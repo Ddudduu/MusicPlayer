@@ -7,8 +7,13 @@ import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import com.example.domain.entity.Music
 import com.example.domain.repository.PlayerRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class PlayerRepositoryImpl @Inject constructor(
@@ -52,6 +57,19 @@ class PlayerRepositoryImpl @Inject constructor(
         exoPlayer.seekTo(idx, 0)
         exoPlayer.play()
     }
+
+    override fun getCurrentPosition(): Flow<Long> = flow {
+        while (true) {
+            if (isPlaying.value) {
+                // main thread의 Exoplayer 접근
+                val pos = withContext(Dispatchers.Main) {
+                    exoPlayer.currentPosition
+                }
+                emit(pos)
+            }
+        }
+        // ANR 방지하기 위해 값 방출은 IO에서
+    }.flowOn(Dispatchers.IO)
 
     override fun pause() {
         exoPlayer.pause()

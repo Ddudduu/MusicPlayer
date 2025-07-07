@@ -1,6 +1,7 @@
 package com.example.domain.repository
 
 import com.example.domain.entity.Music
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 interface PlayerRepository {
@@ -10,6 +11,7 @@ interface PlayerRepository {
     fun setMusicList(musicList: List<Music>)
     fun play(idx: Int)
 
+    fun getCurrentPosition(): Flow<Long>
     fun pause()
     fun resume()
     fun release()
