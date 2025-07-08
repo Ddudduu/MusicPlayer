@@ -14,9 +14,12 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,23 +29,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -247,7 +249,7 @@ fun MusicList(
     LazyColumn {
         itemsIndexed(
             items = musicList.value,
-            key = { _, item -> item.id}
+            key = { _, item -> item.id }
         ) { index, music ->
             val music = musicList.value[index]
             MusicItem(music) {
@@ -325,31 +327,67 @@ fun MusicItem(
     mediaMetaDataRetriever.release()
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerScreen(title: String, viewModel: MusicViewModel = hiltViewModel()) {
-    var sliderPosition by remember { mutableFloatStateOf(0f) }
+    val musicPosition by viewModel.curPos.collectAsState()
+    val duration by viewModel.duration.collectAsState()
     val isPlaying by viewModel.isPlaying.collectAsState()
+
+    val sliderPosition = if (duration > 0) {
+        (musicPosition / duration.toFloat()).coerceIn(0f, 1f)
+    } else 0f
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFccc5b9))
     ) {
         Image(
             painter = painterResource(id = R.drawable.img_panda_playing_guitar),
             contentDescription = "Default Image"
         )
-        Text("Title: $title")
+        Text("$title")
 //        Text("Artist: ${music.artist}")
-
         Slider(
             value = sliderPosition,
-            onValueChange = { sliderPosition = it },
-            colors = SliderDefaults.colors(
-                // thumb size 는 변경 불가
-                thumbColor = Color.Transparent,
-                disabledThumbColor = Color.Transparent
-            ),
+            valueRange = 0f..1f,
+            onValueChange = {
+//                sliderPosition = it.toLong()
+            },
+
+            track = { sliderState ->
+                val activeColor = Color.White
+                val inactiveColor = Color(0xCCa7a8aa)
+                val activeFraction by remember { derivedStateOf { (sliderState.value - sliderState.valueRange.start) / (sliderState.valueRange.endInclusive - sliderState.valueRange.start) } }
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                ) {
+                    Box(
+                        Modifier
+                            .fillMaxWidth(activeFraction)
+                            .align(Alignment.CenterStart)
+                            .height(5.dp)
+                            .background(activeColor, CircleShape)
+                    )
+
+                    Box(
+                        Modifier
+                            .fillMaxWidth(1f - activeFraction)
+                            .align(Alignment.CenterEnd)
+                            .height(4.dp)
+                            .background(inactiveColor, CircleShape)
+                    )
+                }
+            },
+            thumb = {
+                Canvas(modifier = Modifier.size(18.dp)) {
+                    drawCircle(color = Color.White)
+                }
+            },
             modifier = Modifier.padding(horizontal = 30.dp)
         )
 
