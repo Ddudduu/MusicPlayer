@@ -8,6 +8,8 @@ interface PlayerRepository {
     val isMediaItemSet: StateFlow<Boolean>
     val isPlaying: StateFlow<Boolean>
 
+    val duration: StateFlow<Long>
+
     fun setMusicList(musicList: List<Music>)
     fun play(idx: Int)
 

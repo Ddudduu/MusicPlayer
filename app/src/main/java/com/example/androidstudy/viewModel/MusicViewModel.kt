@@ -1,6 +1,5 @@
 package com.example.androidstudy.viewModel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.entity.Music
@@ -25,6 +24,7 @@ class MusicViewModel @Inject constructor(
 
     private val _curPos = MutableStateFlow(0L)
     val curPos: StateFlow<Long> = _curPos
+    val duration = playerRepository.duration
 
     fun getMusicList() {
         // 기본적으로 main 스레드에서 실행
@@ -49,7 +49,6 @@ class MusicViewModel @Inject constructor(
         viewModelScope.launch {
             playerRepository.getCurrentPosition().collect { pos ->
                 _curPos.value = pos
-                Log.i("=== cur pos === ", pos.toString())
             }
         }
     }

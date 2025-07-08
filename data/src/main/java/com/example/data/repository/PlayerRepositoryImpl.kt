@@ -26,12 +26,21 @@ class PlayerRepositoryImpl @Inject constructor(
     private val _isMediaItemSet = MutableStateFlow(false)
     override val isMediaItemSet: StateFlow<Boolean> get() = _isMediaItemSet
 
+    private val _duration = MutableStateFlow(0L)
+    override val duration: StateFlow<Long> = _duration
+
     // ExoPlayer 재생 상태 값을 받아오기 위한 리스너
     private val exoPlayerListener: Player.Listener = createListener()
     private fun createListener() = object : Player.Listener {
         override fun onIsPlayingChanged(isPlaying: Boolean) {
             _isPlaying.value = isPlaying
             println("$$ isPlaying $$ $isPlaying")
+        }
+
+        override fun onPlaybackStateChanged(playbackState: Int) {
+            if (playbackState == Player.STATE_READY) {
+                _duration.value = exoPlayer.duration
+            }
         }
     }
 
