@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -29,10 +28,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -42,7 +38,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -66,6 +61,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.androidstudy.enum.Screen
 import com.example.androidstudy.ui.theme.AndroidStudyTheme
+import com.example.androidstudy.view.DetailScreen
 import com.example.androidstudy.viewModel.MusicViewModel
 import com.example.domain.entity.Music
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -118,7 +114,7 @@ fun Navigation() {
             val viewModel = hiltViewModel<MusicViewModel>(parentEntry)
 
             val title = backStackEntry.arguments?.getString("title").toString()
-            PlayerScreen(title = title, viewModel)
+            DetailScreen(title = title, viewModel)
         }
     }
 }
@@ -247,7 +243,7 @@ fun MusicList(
     LazyColumn {
         itemsIndexed(
             items = musicList.value,
-            key = { _, item -> item.id}
+            key = { _, item -> item.id }
         ) { index, music ->
             val music = musicList.value[index]
             MusicItem(music) {
@@ -323,90 +319,6 @@ fun MusicItem(
         }
     }
     mediaMetaDataRetriever.release()
-}
-
-@Composable
-fun PlayerScreen(title: String, viewModel: MusicViewModel = hiltViewModel()) {
-    var sliderPosition by remember { mutableFloatStateOf(0f) }
-    val isPlaying by viewModel.isPlaying.collectAsState()
-
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.img_panda_playing_guitar),
-            contentDescription = "Default Image"
-        )
-        Text("Title: $title")
-//        Text("Artist: ${music.artist}")
-
-        Slider(
-            value = sliderPosition,
-            onValueChange = { sliderPosition = it },
-            colors = SliderDefaults.colors(
-                // thumb size 는 변경 불가
-                thumbColor = Color.Transparent,
-                disabledThumbColor = Color.Transparent
-            ),
-            modifier = Modifier.padding(horizontal = 30.dp)
-        )
-
-        Text(text = sliderPosition.toString())
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(70.dp), verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(
-                modifier = Modifier
-                    .weight(1f)
-                    .height(60.dp),
-                onClick = {},
-                content = {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_prev),
-                        contentDescription = null
-                    )
-                })
-
-            IconButton(
-                modifier = Modifier.weight(1f),
-                onClick = {
-                    if (isPlaying) viewModel.pauseMusic()
-                    else viewModel.resumeMusic()
-                },
-                content = {
-                    Image(
-                        painter = if (isPlaying)
-                            painterResource(id = R.drawable.ic_pause)
-                        else painterResource(R.drawable.ic_play),
-                        contentDescription = null
-                    )
-                })
-
-            IconButton(
-                modifier = Modifier
-                    .weight(1f),
-                onClick = { },
-                content = {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_next),
-                        contentDescription = null
-                    )
-                })
-        }
-
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DetailPreview() {
-    AndroidStudyTheme {
-        PlayerScreen("Hans Zimmer")
-    }
 }
 
 //@Preview(showBackground = true)

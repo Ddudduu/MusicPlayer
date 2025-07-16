@@ -22,6 +22,10 @@ class MusicViewModel @Inject constructor(
 
     val isPlaying = playerRepository.isPlaying
 
+    private val _curPos = MutableStateFlow(0L)
+    val curPos: StateFlow<Long> = _curPos
+    val duration = playerRepository.duration
+
     fun getMusicList() {
         // 기본적으로 main 스레드에서 실행
         viewModelScope.launch(Dispatchers.Main) {
@@ -38,6 +42,19 @@ class MusicViewModel @Inject constructor(
 
     fun playMusic(idx: Int) {
         playerRepository.play(idx)
+        getMusicCurPosition()
+    }
+
+    fun seek(pos: Long) {
+        playerRepository.seek(pos)
+    }
+
+    fun getMusicCurPosition() {
+        viewModelScope.launch {
+            playerRepository.getCurrentPosition().collect { pos ->
+                _curPos.value = pos
+            }
+        }
     }
 
     fun getNextMusic() {
@@ -51,6 +68,7 @@ class MusicViewModel @Inject constructor(
     fun resumeMusic() {
         playerRepository.resume()
     }
+
 
     override fun onCleared() {
         super.onCleared()
