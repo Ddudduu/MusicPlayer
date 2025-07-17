@@ -67,6 +67,8 @@ class PlayerRepositoryImpl @Inject constructor(
             mediaItem?.mediaMetadata?.title.let {
                 _curTitle.value = it.toString()
             }
+            // update duration when music changed
+            _duration.value = exoPlayer.duration
         }
     }
 
