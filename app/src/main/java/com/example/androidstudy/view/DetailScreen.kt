@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -40,7 +41,8 @@ import com.example.androidstudy.viewModel.MusicViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailScreen(title: String, viewModel: MusicViewModel = hiltViewModel()) {
+fun DetailScreen(viewModel: MusicViewModel = hiltViewModel()) {
+    val musicTitle by viewModel.curTitle.collectAsState()
     val musicPos by viewModel.curPos.collectAsState()
     val duration by viewModel.duration.collectAsState()
     val isPlaying by viewModel.isPlaying.collectAsState()
@@ -78,7 +80,13 @@ fun DetailScreen(title: String, viewModel: MusicViewModel = hiltViewModel()) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            Text("$title", fontWeight = FontWeight.Medium, fontSize = 18.sp)
+            Text(
+                modifier = Modifier.padding(horizontal = 20.dp),
+                text = "$musicTitle",
+                fontWeight = FontWeight.Medium,
+                fontSize = 18.sp,
+                textAlign = TextAlign.Justify
+            )
         }
 
         // music duration
@@ -214,6 +222,6 @@ fun CustomTrack(sliderValue: Float) {
 @Composable
 fun DetailPreview() {
     AndroidStudyTheme {
-        DetailScreen("Hans Zimmer")
+//        DetailScreen("Hans Zimmer")
     }
 }

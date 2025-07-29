@@ -9,6 +9,7 @@ interface PlayerRepository {
     val isPlaying: StateFlow<Boolean>
 
     val duration: StateFlow<Long>
+    val curTitle: StateFlow<String>
 
     fun setMusicList(musicList: List<Music>)
     fun play(idx: Int)
