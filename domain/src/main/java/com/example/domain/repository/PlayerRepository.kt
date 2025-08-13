@@ -21,4 +21,8 @@ interface PlayerRepository {
     fun pause()
     fun resume()
     fun release()
+
+    fun playNextMusic()
+
+    fun playPrevMusic()
 }

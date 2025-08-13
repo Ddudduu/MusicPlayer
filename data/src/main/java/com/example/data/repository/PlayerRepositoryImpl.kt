@@ -157,4 +157,20 @@ class PlayerRepositoryImpl @Inject constructor(
         exoPlayer.release()
         exoPlayer.removeListener(exoPlayerListener)
     }
+
+    override fun playNextMusic() {
+        if (exoPlayer.hasNextMediaItem()) {
+            play(exoPlayer.nextMediaItemIndex)
+        } else {
+            play(0)
+        }
+    }
+
+    override fun playPrevMusic() {
+        if(exoPlayer.hasPreviousMediaItem()){
+            play(exoPlayer.previousMediaItemIndex)
+        }else{
+            play(exoPlayer.mediaItemCount-1)
+        }
+    }
 }

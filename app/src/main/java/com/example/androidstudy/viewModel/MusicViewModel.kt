@@ -73,8 +73,12 @@ class MusicViewModel @Inject constructor(
         }
     }
 
-    fun getNextMusic() {
+    fun playNextMusic() {
+        playerRepository.playNextMusic()
+    }
 
+    fun playPrevMusic() {
+        playerRepository.playPrevMusic()
     }
 
     fun pauseMusic() {
@@ -84,7 +88,6 @@ class MusicViewModel @Inject constructor(
     fun resumeMusic() {
         playerRepository.resume()
     }
-
 
     override fun onCleared() {
         super.onCleared()

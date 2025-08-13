@@ -131,7 +131,7 @@ fun DetailScreen(viewModel: MusicViewModel = hiltViewModel()) {
                 modifier = Modifier
                     .weight(1f)
                     .height(60.dp),
-                onClick = {},
+                onClick = { viewModel.playPrevMusic() },
                 content = {
                     Image(
                         painter = painterResource(id = R.drawable.ic_prev),
@@ -157,7 +157,7 @@ fun DetailScreen(viewModel: MusicViewModel = hiltViewModel()) {
             IconButton(
                 modifier = Modifier
                     .weight(1f),
-                onClick = { },
+                onClick = { viewModel.playNextMusic() },
                 content = {
                     Image(
                         painter = painterResource(id = R.drawable.ic_next),
