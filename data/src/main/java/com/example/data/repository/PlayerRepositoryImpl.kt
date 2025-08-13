@@ -37,6 +37,9 @@ class PlayerRepositoryImpl @Inject constructor(
     private val _curTitle = MutableStateFlow("")
     override val curTitle: StateFlow<String> = _curTitle.asStateFlow()
 
+    private val _curUri = MutableStateFlow("")
+    override val curUri: StateFlow<String> = _curUri.asStateFlow()
+
     private var onSeekFinishedCallback: (() -> Unit)? = null
 
     // ExoPlayer 재생 상태 값을 받아오기 위한 리스너
@@ -66,6 +69,12 @@ class PlayerRepositoryImpl @Inject constructor(
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
             mediaItem?.mediaMetadata?.title.let {
                 _curTitle.value = it.toString()
+            }
+
+            // get album cover uri
+            mediaItem?.localConfiguration?.uri.let {
+                Log.w("local uri ", it.toString())
+                _curUri.value = it.toString()
             }
             // update duration when music changed
             _duration.value = exoPlayer.duration

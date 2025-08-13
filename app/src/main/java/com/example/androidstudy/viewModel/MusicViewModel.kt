@@ -32,11 +32,8 @@ class MusicViewModel @Inject constructor(
     val curPos: StateFlow<Long> = _curPos
     val duration = playerRepository.duration
 
-    val curTitle = playerRepository.curTitle.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = ""
-    )
+    val curTitle = playerRepository.curTitle
+    val curUri = playerRepository.curUri
 
     val curPosDurationFormatted: StateFlow<String> = _curPos.combine(duration) { pos, dur ->
         formatMillisToMinSec(pos) to formatMillisToMinSec(dur.takeIf { it != C.TIME_UNSET } ?: 0L)
