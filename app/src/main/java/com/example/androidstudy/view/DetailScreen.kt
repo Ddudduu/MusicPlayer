@@ -108,6 +108,18 @@ fun DetailScreen(viewModel: MusicViewModel = hiltViewModel()) {
             Text(timeText, fontWeight = FontWeight.Medium, fontSize = 15.sp, color = Color.White)
         }
 
+        // music duration
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .padding(end = 10.dp),
+            horizontalArrangement = Arrangement.End
+        ) {
+            val timeText by viewModel.curPosDurationFormatted.collectAsState()
+            Text(timeText, fontWeight = FontWeight.Medium, fontSize = 15.sp, color = Color.White)
+        }
+
         MusicSlider(
             sliderValue = sliderValue,
             onValueChanged = { changedValue ->

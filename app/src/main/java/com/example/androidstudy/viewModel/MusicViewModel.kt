@@ -2,6 +2,7 @@ package com.example.androidstudy.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.C
 import com.example.androidstudy.di.formatMillisToMinSec
 import com.example.domain.entity.Music
@@ -9,6 +10,7 @@ import com.example.domain.repository.MusicRepository
 import com.example.domain.repository.PlayerRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -31,7 +33,7 @@ class MusicViewModel @Inject constructor(
     private val _curPos = MutableStateFlow(0L)
     val curPos: StateFlow<Long> = _curPos
     val duration = playerRepository.duration
-
+  
     val curTitle = playerRepository.curTitle
     val curUri = playerRepository.curUri
 
