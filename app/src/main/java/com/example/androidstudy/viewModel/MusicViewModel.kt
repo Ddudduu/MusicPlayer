@@ -33,6 +33,9 @@ class MusicViewModel @Inject constructor(
     private val _curPos = MutableStateFlow(0L)
     val curPos: StateFlow<Long> = _curPos
     val duration = playerRepository.duration
+  
+    val curTitle = playerRepository.curTitle
+    val curUri = playerRepository.curUri
 
     val curPosDurationFormatted: StateFlow<String> = _curPos.combine(duration) { pos, dur ->
         formatMillisToMinSec(pos) to formatMillisToMinSec(dur.takeIf { it != C.TIME_UNSET } ?: 0L)
@@ -72,8 +75,12 @@ class MusicViewModel @Inject constructor(
         }
     }
 
-    fun getNextMusic() {
+    fun playNextMusic() {
+        playerRepository.playNextMusic()
+    }
 
+    fun playPrevMusic() {
+        playerRepository.playPrevMusic()
     }
 
     fun pauseMusic() {
@@ -83,7 +90,6 @@ class MusicViewModel @Inject constructor(
     fun resumeMusic() {
         playerRepository.resume()
     }
-
 
     override fun onCleared() {
         super.onCleared()

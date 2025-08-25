@@ -9,6 +9,8 @@ interface PlayerRepository {
     val isPlaying: StateFlow<Boolean>
 
     val duration: StateFlow<Long>
+    val curTitle: StateFlow<String>
+    val curUri: StateFlow<String>
 
     fun setMusicList(musicList: List<Music>)
     fun play(idx: Int)
@@ -19,4 +21,8 @@ interface PlayerRepository {
     fun pause()
     fun resume()
     fun release()
+
+    fun playNextMusic()
+
+    fun playPrevMusic()
 }

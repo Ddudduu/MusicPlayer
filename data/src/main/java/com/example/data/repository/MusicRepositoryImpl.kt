@@ -57,7 +57,7 @@ class MusicRepositoryImpl @Inject constructor(@ApplicationContext private val co
 
             while (cursor.moveToNext()) {
                 val id = cursor.getLong(idColumn)
-                val name = cursor.getString(nameColumn)
+                val name = cursor.getString(nameColumn).substringBeforeLast(".")
                 val artist = cursor.getString(artistColumn)
                 val audioUri = ContentUris.withAppendedId(uri, id)
 

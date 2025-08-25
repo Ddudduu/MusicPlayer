@@ -14,6 +14,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.isActive
@@ -25,13 +26,19 @@ class PlayerRepositoryImpl @Inject constructor(
 ) :
     PlayerRepository {
     private val _isPlaying = MutableStateFlow(false)
-    override val isPlaying: StateFlow<Boolean> get() = _isPlaying
+    override val isPlaying: StateFlow<Boolean> = _isPlaying.asStateFlow()
 
     private val _isMediaItemSet = MutableStateFlow(false)
-    override val isMediaItemSet: StateFlow<Boolean> get() = _isMediaItemSet
+    override val isMediaItemSet: StateFlow<Boolean> = _isMediaItemSet.asStateFlow()
 
     private val _duration = MutableStateFlow(0L)
     override val duration: StateFlow<Long> = _duration
+
+    private val _curTitle = MutableStateFlow("")
+    override val curTitle: StateFlow<String> = _curTitle.asStateFlow()
+
+    private val _curUri = MutableStateFlow("")
+    override val curUri: StateFlow<String> = _curUri.asStateFlow()
 
     private var onSeekFinishedCallback: (() -> Unit)? = null
 
@@ -58,6 +65,20 @@ class PlayerRepositoryImpl @Inject constructor(
                 onSeekFinishedCallback?.invoke()
             }
         }
+
+        override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+            mediaItem?.mediaMetadata?.title.let {
+                _curTitle.value = it.toString()
+            }
+
+            // get album cover uri
+            mediaItem?.localConfiguration?.uri.let {
+                Log.w("local uri ", it.toString())
+                _curUri.value = it.toString()
+            }
+            // update duration when music changed
+            _duration.value = exoPlayer.duration
+        }
     }
 
     init {
@@ -67,12 +88,19 @@ class PlayerRepositoryImpl @Inject constructor(
     override fun setMusicList(musicList: List<Music>) {
         if (isMediaItemSet.value) return
 
-        val mediaItems = musicList.map {
-            MediaItem.fromUri(Uri.parse(it.musicUri))
+        // set meta data implicitly
+        val mediaItems = musicList.map { music ->
+            MediaItem.Builder()
+                .setUri(Uri.parse(music.musicUri))
+                .setMediaMetadata(
+                    androidx.media3.common.MediaMetadata.Builder()
+                        .setTitle(music.title)
+                        .setArtist(music.artist).build()
+                ).build()
         }
+
         exoPlayer.setMediaItems(mediaItems)
         exoPlayer.prepare()
-
         _isMediaItemSet.value = true
     }
 
@@ -128,5 +156,21 @@ class PlayerRepositoryImpl @Inject constructor(
     override fun release() {
         exoPlayer.release()
         exoPlayer.removeListener(exoPlayerListener)
+    }
+
+    override fun playNextMusic() {
+        if (exoPlayer.hasNextMediaItem()) {
+            play(exoPlayer.nextMediaItemIndex)
+        } else {
+            play(0)
+        }
+    }
+
+    override fun playPrevMusic() {
+        if(exoPlayer.hasPreviousMediaItem()){
+            play(exoPlayer.previousMediaItemIndex)
+        }else{
+            play(exoPlayer.mediaItemCount-1)
+        }
     }
 }
