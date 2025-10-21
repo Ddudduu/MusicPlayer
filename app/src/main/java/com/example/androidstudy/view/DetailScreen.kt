@@ -1,6 +1,5 @@
 package com.example.androidstudy.view
 
-import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.util.Log
@@ -95,18 +94,6 @@ fun DetailScreen(viewModel: MusicViewModel = hiltViewModel()) {
                 fontSize = 18.sp,
                 textAlign = TextAlign.Justify
             )
-        }
-
-        // music duration
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(end = 10.dp),
-            horizontalArrangement = Arrangement.End
-        ) {
-            val timeText by viewModel.curPosDurationFormatted.collectAsState()
-            Text(timeText, fontWeight = FontWeight.Medium, fontSize = 15.sp, color = Color.White)
         }
 
         // music duration
