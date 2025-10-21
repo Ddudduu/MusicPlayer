@@ -2,7 +2,6 @@ package com.example.androidstudy
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
@@ -40,7 +39,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -54,6 +52,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import coil.compose.AsyncImage
+import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.example.androidstudy.enum.Screen
 import com.example.androidstudy.ui.theme.AndroidStudyTheme
@@ -257,8 +256,16 @@ fun MusicItem(
 ) {
     val context = LocalContext.current
     val mediaMetaDataRetriever = MediaMetadataRetriever()
-    mediaMetaDataRetriever.setDataSource(context, Uri.parse(music.musicUri))
-    val picture = mediaMetaDataRetriever.embeddedPicture
+
+    val picture = try {
+        mediaMetaDataRetriever.setDataSource(context, Uri.parse(music.musicUri))
+        mediaMetaDataRetriever.embeddedPicture
+    } catch (e: Exception) {
+        Log.e("MediaRetriever", "setDataSource fail! ${e.localizedMessage}", e)
+        null
+    } finally {
+        mediaMetaDataRetriever.release()
+    }
 
     Card(
         modifier = Modifier
@@ -312,7 +319,6 @@ fun MusicItem(
             }
         }
     }
-    mediaMetaDataRetriever.release()
 }
 
 //@Preview(showBackground = true)

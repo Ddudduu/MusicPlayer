@@ -241,12 +241,20 @@ fun CustomTrack(sliderValue: Float) {
 @Composable
 fun AlbumCoverImage(musicUri: String) {
     val context = LocalContext.current
-    val mediaMetaDataRetriever = MediaMetadataRetriever()
-    var picture = remember(musicUri) {
-        mediaMetaDataRetriever.setDataSource(context, Uri.parse(musicUri))
-        val pic = mediaMetaDataRetriever.embeddedPicture
-        mediaMetaDataRetriever.release()
-        pic
+    val picture = remember(musicUri) {
+        if (musicUri.isEmpty()) {
+            return@remember null
+        }
+        val retriever = MediaMetadataRetriever()
+        try {
+            retriever.setDataSource(context, Uri.parse(musicUri))
+            retriever.embeddedPicture
+        } catch (e: Exception) {
+            Log.e("AlbumCoverImage", "Error loading album art for $musicUri", e)
+            null
+        } finally {
+            retriever.release()
+        }
     }
 
     val imageRequest = picture?.let {
