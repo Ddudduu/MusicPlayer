@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.example.androidstudy.R
 import com.example.androidstudy.ui.theme.AndroidStudyTheme
@@ -257,28 +258,31 @@ fun AlbumCoverImage(musicUri: String) {
         }
     }
 
-    val imageRequest = picture?.let {
+    val imageRequest = remember(picture) {
         ImageRequest.Builder(context)
-            .data(BitmapFactory.decodeByteArray(it, 0, it.size))
-            .crossfade(true)
-            .placeholder(R.drawable.img_music_default)
+            .data(picture ?: R.drawable.img_music_default)
             .error(R.drawable.img_music_default)
+            .placeholder(R.drawable.img_music_default)
+            .memoryCacheKey(musicUri)
+            .memoryCachePolicy(CachePolicy.ENABLED)
+            .diskCachePolicy(CachePolicy.ENABLED)
+            .crossfade(false)
             .listener(
                 onError = { _, result ->
                     Log.e("=== Coil loading error :", "${result.throwable}")
                 },
                 onSuccess = { _, result ->
-                    Log.i("=== Coil loading success :", "===")
+                    Log.i("=== Coil loading success :", "${picture?.size}")
                 }
             ).build()
     }
 
+
     AsyncImage(
-        modifier = Modifier.size(300.dp),
-        contentScale = ContentScale.Fit,
         model = imageRequest,
-        contentDescription = null,
-        error = painterResource(R.drawable.img_music_default)
+        contentDescription = "Album Cover",
+        modifier = Modifier.size(300.dp),
+        contentScale = ContentScale.Fit
     )
 }
 

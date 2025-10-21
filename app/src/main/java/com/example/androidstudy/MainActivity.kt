@@ -267,6 +267,25 @@ fun MusicItem(
         mediaMetaDataRetriever.release()
     }
 
+    val imageRequest = remember(picture) {
+        ImageRequest.Builder(context)
+            .data(picture ?: R.drawable.img_music_default)
+            .error(R.drawable.img_music_default)
+            .placeholder(R.drawable.img_music_default)
+            .memoryCacheKey(music.musicUri) // 고유 key
+            .memoryCachePolicy(CachePolicy.ENABLED)
+            .diskCachePolicy(CachePolicy.ENABLED)
+            .crossfade(false)
+            .listener(
+                onError = { _, result ->
+                    Log.e("=== Coil loading error :", "${result.throwable}")
+                },
+                onSuccess = { _, result ->
+                    Log.i("=== Coil loading success :", "${picture?.size}")
+                }
+            ).build()
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -300,6 +319,12 @@ fun MusicItem(
                 } ?: R.drawable.img_music_default,
                 contentDescription = null,
                 error = painterResource(R.drawable.img_music_default)
+            )
+            AsyncImage(
+                model = imageRequest,
+                modifier = Modifier.size(50.dp),
+                contentScale = ContentScale.Fit,
+                contentDescription = null,
             )
 
             Column(
