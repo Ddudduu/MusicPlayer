@@ -128,14 +128,13 @@ class PlayerRepositoryImpl @Inject constructor(
                 ).build()
         }
 
+        prevMusicList = musicList
         exoPlayer.setMediaItems(mediaItems)
         exoPlayer.prepare()
         _isMediaItemSet.value = true
     }
 
     override fun play(idx: Int) {
-        Log.i(" == play called! ==", idx.toString())
-
         exoPlayer.seekTo(idx, 0)
         exoPlayer.play()
     }
@@ -196,10 +195,18 @@ class PlayerRepositoryImpl @Inject constructor(
     }
 
     override fun playPrevMusic() {
-        if(exoPlayer.hasPreviousMediaItem()){
+        if (exoPlayer.hasPreviousMediaItem()) {
             play(exoPlayer.previousMediaItemIndex)
-        }else{
-            play(exoPlayer.mediaItemCount-1)
+        } else {
+            play(exoPlayer.mediaItemCount - 1)
         }
+    }
+
+    private fun recreatePlayer() {
+        exoPlayer.release()
+        exoPlayer = exoPlayerProvider.createPlayer()
+        _isMediaItemSet.value = false
+        prevMusicList?.let { setMusicList(it) }
+        exoPlayer.addListener(exoPlayerListener)
     }
 }
