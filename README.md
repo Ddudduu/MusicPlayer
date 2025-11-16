@@ -9,7 +9,7 @@ Android Music Player using ExoPlayer
 <br/><br/><br/>
 
 ## 3. Multi Module Architecture
-<img src = "https://private-user-images.githubusercontent.com/50603005/480131216-3e6bc094-f2ba-469e-9844-100ea144cadd.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NjEwNTg1NjIsIm5iZiI6MTc2MTA1ODI2MiwicGF0aCI6Ii81MDYwMzAwNS80ODAxMzEyMTYtM2U2YmMwOTQtZjJiYS00NjllLTk4NDQtMTAwZWExNDRjYWRkLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTEwMjElMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUxMDIxVDE0NTEwMlomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTU1Njk0YmNjM2M4MmEyODM2NmE1N2NjYmQ1YTJmNjgzNTg0YTM1NTMyY2Q0Y2YxMzQ5NzM3YWNiZGMxMzVjMzkmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.CO4nLaaOugIRW9djh9q6yJhbncAybj34SaPe6fxm9hI" width="70%" height="30%">
+<img src = "https://i.ibb.co/Txwycf0k/MP3-Player.png" width="70%" height="30%">
  <br/>
  
 | Module | Description |
