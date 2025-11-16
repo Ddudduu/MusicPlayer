@@ -3,16 +3,21 @@ package com.example.data.repository
 import android.net.Uri
 import android.util.Log
 import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
-import androidx.media3.exoplayer.ExoPlayer
+import com.example.data.di.ExoPlayerProvider
 import com.example.domain.entity.Music
+import com.example.domain.entity.PlayerError
+import com.example.domain.entity.PlayerErrorType
 import com.example.domain.repository.PlayerRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.callbackFlow
@@ -40,7 +45,12 @@ class PlayerRepositoryImpl @Inject constructor(
     private val _curUri = MutableStateFlow("")
     override val curUri: StateFlow<String> = _curUri.asStateFlow()
 
+    private val _playerError = MutableSharedFlow<PlayerError>()
+    override val playerError: SharedFlow<PlayerError> = _playerError
+
     private var onSeekFinishedCallback: (() -> Unit)? = null
+
+    private var prevMusicList: List<Music> = emptyList()
 
     // ExoPlayer 재생 상태 값을 받아오기 위한 리스너
     private val exoPlayerListener: Player.Listener = createListener()
@@ -78,6 +88,24 @@ class PlayerRepositoryImpl @Inject constructor(
             }
             // update duration when music changed
             _duration.value = exoPlayer.duration
+        }
+
+        override fun onPlayerError(error: PlaybackException) {
+            // clear current music info
+            _curTitle.value = ""
+            _curUri.value = ""
+            val errorType = when (error.errorCode) {
+                PlaybackException.ERROR_CODE_IO_FILE_NOT_FOUND -> PlayerErrorType.SOURCE_ERROR
+                PlaybackException.ERROR_CODE_DECODING_FAILED -> PlayerErrorType.DECODING_ERROR
+                PlaybackException.ERROR_CODE_PARSING_CONTAINER_UNSUPPORTED -> PlayerErrorType.UNSUPPORTED_FORMAT
+                else -> PlayerErrorType.UNKNOWN_ERROR
+            }
+
+            // emit error event
+            CoroutineScope(Dispatchers.IO).launch {
+                _playerError.emit(PlayerError(type = errorType, message = error.localizedMessage))
+            }
+            recreatePlayer()
         }
     }
 
