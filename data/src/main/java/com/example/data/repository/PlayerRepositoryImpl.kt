@@ -27,9 +27,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class PlayerRepositoryImpl @Inject constructor(
-    private val exoPlayer: ExoPlayer,
+    private val exoPlayerProvider: ExoPlayerProvider,
 ) :
     PlayerRepository {
+    private var exoPlayer = exoPlayerProvider.createPlayer()
     private val _isPlaying = MutableStateFlow(false)
     override val isPlaying: StateFlow<Boolean> = _isPlaying.asStateFlow()
 
