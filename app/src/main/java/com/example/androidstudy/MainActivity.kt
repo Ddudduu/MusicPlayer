@@ -107,7 +107,7 @@ fun Navigation() {
             val parentEntry =
                 remember(backStackEntry) { navController.getBackStackEntry(Screen.Main.route) }
             val viewModel = hiltViewModel<MusicViewModel>(parentEntry)
-            DetailScreen(viewModel)
+            DetailScreen(viewModel, navController = navController)
         }
     }
 }
@@ -258,12 +258,15 @@ fun MusicItem(
     val mediaMetaDataRetriever = MediaMetadataRetriever()
 
     val picture = try {
+        Log.i("== music uri ==", "${music.musicUri}, ${music.title}")
         mediaMetaDataRetriever.setDataSource(context, Uri.parse(music.musicUri))
         mediaMetaDataRetriever.embeddedPicture
     } catch (e: Exception) {
+        Log.e("MediaRetriever", "setDataSource fail! ${e.message}", e)
         Log.e("MediaRetriever", "setDataSource fail! ${e.localizedMessage}", e)
         null
     } finally {
+        Log.i("== MediaRetriever release ", "called!!")
         mediaMetaDataRetriever.release()
     }
 
@@ -299,14 +302,17 @@ fun MusicItem(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            /*
             AsyncImage(
                 modifier = Modifier.size(50.dp),
                 contentScale = ContentScale.Fit,
                 model = picture?.let {
                     // ByteArray -> Bitmap
                     ImageRequest.Builder(context)
-                        .data(BitmapFactory.decodeByteArray(it, 0, it.size)).crossfade(true)
-                        .placeholder(R.drawable.img_music_default)
+                        .data(BitmapFactory.decodeByteArray(it, 0, it.size))
+//                        .crossfade(true)
+                        .memoryCachePolicy(CachePolicy.ENABLED)
+                        .diskCachePolicy(CachePolicy.ENABLED)
                         .error(R.drawable.img_music_default)
                         .listener(
                             onError = { _, result ->
@@ -320,6 +326,27 @@ fun MusicItem(
                 contentDescription = null,
                 error = painterResource(R.drawable.img_music_default)
             )
+            */
+
+            /*
+            Box(Modifier.size(80.dp)) {
+                Image(
+                    modifier = Modifier.matchParentSize(),
+                    contentScale = ContentScale.Fit,
+                    painter = painterResource(R.drawable.img_panda_playing_guitar),
+                    contentDescription = null
+                )
+                if (loaded) {
+                    Image(
+                        modifier = Modifier.matchParentSize(),
+                        contentScale = ContentScale.Fit,
+                        painter = painter,
+                        contentDescription = null
+                    )
+                    Log.i("=== OOO loaded ===", "$loaded")
+                }
+            */
+
             AsyncImage(
                 model = imageRequest,
                 modifier = Modifier.size(50.dp),
