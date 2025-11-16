@@ -1,7 +1,6 @@
-package com.example.androidstudy.di
+package com.example.data.di
 
 import android.content.Context
-import androidx.media3.exoplayer.ExoPlayer
 import com.example.data.repository.MusicRepositoryImpl
 import com.example.data.repository.PlayerRepositoryImpl
 import com.example.domain.repository.MusicRepository
@@ -23,7 +22,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providePlayerRepository(exoPlayer: ExoPlayer): PlayerRepository {
-        return PlayerRepositoryImpl(exoPlayer)
+    fun providePlayerRepository(exoPlayerProvider: ExoPlayerProvider): PlayerRepository {
+        return PlayerRepositoryImpl(exoPlayerProvider)
     }
 }

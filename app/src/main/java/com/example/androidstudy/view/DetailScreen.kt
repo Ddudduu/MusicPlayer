@@ -1,6 +1,5 @@
 package com.example.androidstudy.view
 
-import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.util.Log
@@ -18,10 +17,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -41,7 +42,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.example.androidstudy.R
 import com.example.androidstudy.ui.theme.AndroidStudyTheme
@@ -49,7 +52,7 @@ import com.example.androidstudy.viewModel.MusicViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailScreen(viewModel: MusicViewModel = hiltViewModel()) {
+fun DetailScreen(viewModel: MusicViewModel = hiltViewModel(), navController: NavController) {
     val musicTitle by viewModel.curTitle.collectAsState()
     val musicUri by viewModel.curUri.collectAsState()
 
@@ -66,6 +69,20 @@ fun DetailScreen(viewModel: MusicViewModel = hiltViewModel()) {
         }
     }
 
+    val showDialog by viewModel.showErrorDialog.collectAsState()
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { viewModel.dismissDialog() },
+            confirmButton = {
+                TextButton(onClick = {
+                    navController.popBackStack()
+                    viewModel.dismissDialog()
+                }) { Text("확인") }
+            },
+            title = { Text("음악 재생 오류") },
+            text = { Text("음원을 재생할 수 없습니다.") }
+        )
+    }
     // display userSliderPos when user drags
     // display curMusicPos when user doesn't drag
     val sliderValue = userSliderPos ?: curMusicPos
@@ -94,18 +111,6 @@ fun DetailScreen(viewModel: MusicViewModel = hiltViewModel()) {
                 fontSize = 18.sp,
                 textAlign = TextAlign.Justify
             )
-        }
-
-        // music duration
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(end = 10.dp),
-            horizontalArrangement = Arrangement.End
-        ) {
-            val timeText by viewModel.curPosDurationFormatted.collectAsState()
-            Text(timeText, fontWeight = FontWeight.Medium, fontSize = 15.sp, color = Color.White)
         }
 
         // music duration
@@ -241,36 +246,47 @@ fun CustomTrack(sliderValue: Float) {
 @Composable
 fun AlbumCoverImage(musicUri: String) {
     val context = LocalContext.current
-    val mediaMetaDataRetriever = MediaMetadataRetriever()
-    var picture = remember(musicUri) {
-        mediaMetaDataRetriever.setDataSource(context, Uri.parse(musicUri))
-        val pic = mediaMetaDataRetriever.embeddedPicture
-        mediaMetaDataRetriever.release()
-        pic
+    val picture = remember(musicUri) {
+        if (musicUri.isEmpty()) {
+            return@remember null
+        }
+        val retriever = MediaMetadataRetriever()
+        try {
+            retriever.setDataSource(context, Uri.parse(musicUri))
+            retriever.embeddedPicture
+        } catch (e: Exception) {
+            Log.e("AlbumCoverImage", "Error loading album art for $musicUri", e)
+            null
+        } finally {
+            retriever.release()
+        }
     }
 
-    val imageRequest = picture?.let {
+    val imageRequest = remember(picture) {
         ImageRequest.Builder(context)
-            .data(BitmapFactory.decodeByteArray(it, 0, it.size))
-            .crossfade(true)
-            .placeholder(R.drawable.img_music_default)
+            .data(picture ?: R.drawable.img_music_default)
             .error(R.drawable.img_music_default)
+            .placeholder(R.drawable.img_music_default)
+            .memoryCacheKey(musicUri)
+            .memoryCachePolicy(CachePolicy.ENABLED)
+            .diskCachePolicy(CachePolicy.ENABLED)
+            .crossfade(false)
             .listener(
                 onError = { _, result ->
                     Log.e("=== Coil loading error :", "${result.throwable}")
                 },
                 onSuccess = { _, result ->
-                    Log.i("=== Coil loading success :", "===")
+                    Log.i("=== Coil loading success :", "${picture?.size}")
                 }
             ).build()
     }
 
+
     AsyncImage(
-        modifier = Modifier.size(300.dp),
-        contentScale = ContentScale.Fit,
         model = imageRequest,
-        contentDescription = null,
-        error = painterResource(R.drawable.img_music_default)
+        contentDescription = "Album Cover",
+        modifier = Modifier.size(300.dp),
+        contentScale = ContentScale.Fit
     )
 }
 

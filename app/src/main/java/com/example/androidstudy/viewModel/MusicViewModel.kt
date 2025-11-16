@@ -2,15 +2,13 @@ package com.example.androidstudy.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.C
-import com.example.androidstudy.di.formatMillisToMinSec
+import com.example.androidstudy.utils.formatMillisToMinSec
 import com.example.domain.entity.Music
 import com.example.domain.repository.MusicRepository
 import com.example.domain.repository.PlayerRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -33,9 +31,12 @@ class MusicViewModel @Inject constructor(
     private val _curPos = MutableStateFlow(0L)
     val curPos: StateFlow<Long> = _curPos
     val duration = playerRepository.duration
-  
+
     val curTitle = playerRepository.curTitle
     val curUri = playerRepository.curUri
+
+    private val _showErrorDialog = MutableStateFlow<Boolean>(false)
+    val showErrorDialog: StateFlow<Boolean> = _showErrorDialog
 
     val curPosDurationFormatted: StateFlow<String> = _curPos.combine(duration) { pos, dur ->
         formatMillisToMinSec(pos) to formatMillisToMinSec(dur.takeIf { it != C.TIME_UNSET } ?: 0L)
@@ -43,6 +44,19 @@ class MusicViewModel @Inject constructor(
         .map { (posStr, durStr) -> "$posStr / $durStr" }
         .stateIn(viewModelScope, SharingStarted.Lazily, "0:00 / 0:00")
 
+    init {
+        viewModelScope.launch {
+            playerRepository.playerError.collect { error ->
+                if (error.type != null) {
+                    _showErrorDialog.value = true
+                }
+            }
+        }
+    }
+
+    fun dismissDialog() {
+        _showErrorDialog.value = false
+    }
 
     fun getMusicList() {
         // 기본적으로 main 스레드에서 실행
@@ -93,7 +107,6 @@ class MusicViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        println("!!! onCleared called !!!")
         playerRepository.release()
     }
 }
